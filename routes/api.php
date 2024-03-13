@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\DataController as DataControllerAlias;
+use App\Http\Controllers\ScoreController as ScoreControllerAlias;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::post('/score-save', [ScoreControllerAlias::class, 'save']);
+Route::get('/crossword-data', [DataControllerAlias::class, 'data']);
