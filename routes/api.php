@@ -22,4 +22,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::post('/score-save', [ScoreControllerAlias::class, 'save']);
-Route::get('/crossword-data', [DataControllerAlias::class, 'data']);
+Route::get('/crossword-data', [DataControllerAlias::class, 'dataAll']);
+Route::get('/crossword-data-holiday', [DataControllerAlias::class, 'dataHoliday']);
+Route::get('/crossword-data-answer-question', [DataControllerAlias::class, 'dataAnswerQuestion']);

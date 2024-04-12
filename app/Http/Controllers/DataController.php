@@ -2,20 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\Models\CrosswordSet;
 
 class DataController extends Controller
 {
-    public function data()
+    public function dataAll()
     {
-        $crosswordData = [
-            ['word' => 'apple', 'question' => 'A fruit that is red or green in color'],
-            ['word' => 'banana', 'question' => 'A yellow fruit that is curved'],
-            ['word' => 'orange', 'question' => 'A citrus fruit that is typically orange in color'],
-        ];
+        $date = Carbon::now()->addDay()->toDateString();
+        $crosswordSet = CrosswordSet::where('date', $date)->with(['questions:id,set_id,question,answer'])->first();
 
-        // Return JSON
-        return json_encode($crosswordData);
+        if (!$crosswordSet) {
+            return response()->json(['message' => 'Nie znaleziono zestawu krzyżówki'], 404);
+        }
+
+        $crossword = $crosswordSet->questions->map(function ($question) {
+            return [
+                'answer' => strtolower($question->answer),
+                'question' => $question->question,
+            ];
+        });
+
+        return response()->json(['holiday' => $crosswordSet->holiday, 'crossword' => $crossword], 200);
+    }
+
+    public function dataHoliday()
+    {
+        $date = Carbon::now()->addDay()->toDateString();
+        $crosswordSet = CrosswordSet::where('date', $date)->first();
+
+        if (!$crosswordSet) {
+            return response()->json(['message' => 'Nie znaleziono zestawu krzyżówki'], 404);
+        }
+
+        return response()->json(['holiday' => $crosswordSet->holiday], 200);
+    }
+
+    public function dataAnswerQuestion()
+    {
+        $date = Carbon::now()->addDay()->toDateString();
+        $crosswordSet = CrosswordSet::where('date', $date)->with(['questions:id,set_id,question,answer'])->first();
+
+        if (!$crosswordSet) {
+            return response()->json(['message' => 'Nie znaleziono zestawu krzyżówki'], 404);
+        }
+
+        $crossword = $crosswordSet->questions->map(function ($question) {
+            return [
+                'answer' => $question->answer,
+                'question' => $question->question,
+            ];
+        });
+
+        return response()->json(['crossword' => $crossword], 200);
     }
 }
